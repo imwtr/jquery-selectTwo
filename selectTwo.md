@@ -262,7 +262,7 @@ $('.elem').selectTwo('destroy', true);
 引入`select2`和`selectTwo`的资源文件，或者直接引入`selectTwo.full`的资源文件（已将select2文件打包在一起）
 绑定的元素对象限制为 `<select>` 标签
 
-一般使用   参见 [Demo](./selectTwo/index.html)
+一般使用   参见 [Demo](https://imwtr.github.io/selectTwo/)
 ```javascript
             // 单选
             $('#dep-select-1').selectTwo({
