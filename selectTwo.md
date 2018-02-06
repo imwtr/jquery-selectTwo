@@ -13,7 +13,6 @@
 
 调用2：`$('.elem').selectTwo(trigger, option)`
 
-编写：F
 
 ### Options 参数
 
@@ -22,7 +21,7 @@
 默认：false
 直接使用原来的select2插件绑定（一般不需要）
 
-##### data
+##### `data`
 *array/object* 对数据进行分组时可选，不分组时必选
 默认：[]
 模糊搜索的数据来源，可为对象或数组形式，建议数组
@@ -39,92 +38,92 @@
 默认：'id'
 id域，用于标识某一项，选择之后得到的值也是这个id值
 
-##### matchField
+##### `matchField`
 *array* 必选
 默认：['text']
 指定哪些字段为搜索的字段（如职位搜索中需要搜索职位代号和名称）
 
-##### resultFormat
+##### `resultFormat`
 *string* 可选
 默认：matchField的组合
 搜索下拉列表的格式 % %里为项名，如 [%postNo%] %postName%
 
-##### selectedFormat
+##### `selectedFormat`
 *string* 可选
 默认：resultFormat
 选中项的显示格式  % %里为项名，如 [%postNo%] %postName%
 
-##### allowClear
+##### `allowClear`
 *boolean* 可选
 默认：true
 下拉框选中值后是否允许直接清除（存在x按钮）
 
-##### multiple
+##### `multiple`
 *boolean* 可选
 默认：false
 是否允许多选
 
-##### notMatched
+##### `notMatched`
 *boolean* 可选
 默认：false
 设置为true可用于不精确匹配（也能搜索），输入数据时会临时加一项当前输入值到下拉列表中提供选择
 
-##### width
+##### `width`
 *string* 可选
 默认：'153px'
 输入框的长度
 
-##### placeholder
+##### `placeholder`
 *string* 可选
 默认：'请选择'
 输入框的提示文本
 
-##### maxItemShow
+##### `maxItemShow`
 *number* 可选
 默认：100
 搜索时最大展示的列表项目
 
-#####maxSelectedItem
+##### `maxSelectedItem`
 *number* 可选
 默认：-1（无限制）
 搜索时允许多选的个数
 
-##### minInputLength
+##### `minInputLength`
 *number* 可选
 默认：-1（无限制）
 搜索之前至少输入的字符个数
 
-##### minInputText
+##### `minInputText`
 *string* 可选
 默认：'请至少输入%min%个字'
 输入字符太少的文本提示   需携带%min%占位符
 
-##### noResultText
+##### `noResultText`
 *string* 可选
 默认：'没有匹配结果'
 无匹配的文本提示
 
-##### searchingText
+##### `searchingText`
 *string* 可选
 默认：'查询中...'
 查询中的文本提示
 
-##### loadingMoreText
+##### `loadingMoreText`
 *string* 可选
 默认：'加载中...'
 分页时加载更多的文本提示
 
-##### maxSelectedText
+##### `maxSelectedText`
 *string* 可选
 默认：'只能选择%max%项'
 多选限制最大项的文本提示  需携带%max%占位符
 
-##### group
+##### `group`
 *boolean/array* 可选
 默认：false
 搜索是否需要进行分组，可同时搜索多个数据源
 需要分组时，此项设置为数组，数组中每项为各个组，字段属性类似不分组的情况，例如
-```
+```javascript
 [{
     data: [],
     title: '部门',
@@ -136,22 +135,22 @@ id域，用于标识某一项，选择之后得到的值也是这个id值
 }]
 ```
 
-##### groupTitleShow
+##### `groupTitleShow`
 *boolean* 可选
 默认：true
 搜索进行分组时，是否显示分组标头
 
-##### groupEmptyTitleShow
+##### `groupEmptyTitleShow`
 *boolean* 可选
 默认：true
 搜索进行分组时，若该组没有数据，是否需要显示分组标头（优先级低于groupTitleShow）
 
-##### beforeBinding
+##### `beforeBinding`
 *function(obj)* 可选
 默认：空的函数，返回obj本身
 在绑定之前的处理函数，如后端传值之后，前端先进行转换，处理某一项，处理之后需要返回这个新的项
 如设置某一项默认选择
-```
+```javascript
 beforeBinding: function(obj) {
     if (obj.depID == 'd19') {
         obj.selected = true;
@@ -161,7 +160,7 @@ beforeBinding: function(obj) {
 }
 ```
 
-##### change
+##### `change`
 *function($elem, data, values)* 可选
 默认：空的函数
 当选项改变之后，会调用这个函数
@@ -183,12 +182,12 @@ values:
         单选：单个值 'd1'
 
 
-##### ajax
+##### `ajax`
 *object* 可选
 默认：null 数据源非异步
 可设置数据源是否为异步的形式，异步时还可以设置是否分页（分页较少用）
 异步时默认的参数如下，可传参覆盖
-```
+```javascript
 var ajaxDefault = {
     // 设置输入停顿多久（ms）后进行查询
     delay: 250,
@@ -212,7 +211,7 @@ var ajaxDefault = {
 ```
 
 如果需要分页，data回调中需要返回 page键值，success回调中需要返回pagination键值，标识more，如
-```
+```javascript
     data: function(params) {
         return {
             k: params.term,
@@ -238,22 +237,22 @@ var ajaxDefault = {
 ### Trigger 参数
 可调用的几个参数，trigger为字符串，各个trigger的option不同
 
-##### updateData
+##### `updateData`
 更新数据源，在绑定之后的更新才生效，option为新的数据源，格式与绑定时相同，如
-```
+```javascript
 $('.elem').selectTwo('updateData', [{depID: 'd1', depName: '部门1'}]);
 ```
 
-##### updateValue
+##### `updateValue`
 设置值选中，option为这个值，单选时为单个字符串，多选时为值的数组集合
-```
+```javascript
 $('.elem').selectTwo('updateValue', 'p1');
 $('.elem').selectTwo('updateValue', ['p11', 'p22']);
 ```
 
-##### destroy
+##### `destroy`
 取消绑定，option为是否将select下拉项也一并清空，默认false
-```
+```javascript
 $('.elem').selectTwo('destroy', true);
 ```
 
@@ -263,7 +262,7 @@ $('.elem').selectTwo('destroy', true);
 引入select2和selectTwo的资源文件，或者直接引入selectTwo.full的资源文件（已将select2文件打包在一起）
 绑定的元素对象限制为 &lt;select&gt;标签
 一般使用   参见 [Demo](./selectTwo/index.html)
-```
+```javascript
             // 单选
             $('#dep-select-1').selectTwo({
                 data: allDeps,
