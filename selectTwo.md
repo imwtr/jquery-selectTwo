@@ -9,9 +9,8 @@
 
 依赖：jQuery、select2
 
-地址：`/jsPlugins/jquery-selectTwo`
-
 调用1：`$('.elem').selectTwo(options)`
+
 调用2：`$('.elem').selectTwo(trigger, option)`
 
 编写：F
