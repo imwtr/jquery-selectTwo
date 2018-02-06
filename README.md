@@ -7,3 +7,5 @@ select2是一个不错的下拉模糊搜索插件，但调用起来还是不太�
 [使用文档](./selectTwo.md)
 
 [Demo](https://imwtr.github.io/selectTwo/)
+
+![](./selectTwo/demo.png)
