@@ -259,8 +259,9 @@ $('.elem').selectTwo('destroy', true);
 
 ### Usage 使用
 
-引入select2和selectTwo的资源文件，或者直接引入selectTwo.full的资源文件（已将select2文件打包在一起）
-绑定的元素对象限制为 &lt;select&gt;标签
+引入`select2`和`selectTwo`的资源文件，或者直接引入`selectTwo.full`的资源文件（已将select2文件打包在一起）
+绑定的元素对象限制为` &lt;select&gt;`标签
+
 一般使用   参见 [Demo](./selectTwo/index.html)
 ```javascript
             // 单选
