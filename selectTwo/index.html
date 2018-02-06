@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>selectTwo下拉框模糊搜索使用例子</title>
+        <meta charset="utf-8">
+        <!-- <link rel="stylesheet" href="./css/select2.min.css"> -->
+        <!-- <link rel="stylesheet" href="./css/jquery.selectTwo.min.css"> -->
+        <link rel="stylesheet" href="./css/jquery.selectTwo.full.min.css">
+        <style>
+            body {
+                padding: 0 100px 500px;
+            }
+            p {
+                font-size: 12px;
+            }
+            h2 {
+                font-size: 24px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #d8d8d8;
+                margin-bottom: 20px;
+                margin-top: 60px;
+            }
+        </style>
+    </head>
+<body>
+    <h2>selectTwo下拉框模糊搜索使用例子</h2>
+
+    <h5>基本搜索（单选）</h5>
+    <p>
+        <label for="dep-select-1">部门搜索</label>
+        <select id="dep-select-1"></select>
+    </p>
+
+    <h5>基本搜索（多选，设置最多为3）</h5>
+    <p>
+        <label for="dep-select-2">部门搜索</label>
+        <select id="dep-select-2"></select>
+    </p>
+
+    <h5>基本搜索（设置列表最大项为5）</h5>
+    <p>
+        <label for="dep-select-3">部门搜索</label>
+        <select id="dep-select-3"></select>
+    </p>
+
+    <h5>基本搜索（设置下拉显示的格式和选中后的文本格式）</h5>
+    <p>
+        <label for="post-select-1">职位搜索</label>
+        <select id="post-select-1"></select>
+    </p>
+
+    <h5>基本搜索（设置默认选择和将某项置为不可选）</h5>
+    <p>
+        <label for="post-select-2">职位搜索</label>
+        <select id="post-select-2"></select>
+    </p>
+
+    <h5>基本搜索（自定义无匹配文案）</h5>
+    <p>
+        <label for="post-select-3">职位搜索</label>
+        <select id="post-select-3"></select>
+    </p>
+
+    <h5>基本搜索（无匹配时也可以进行选择）</h5>
+    <p>
+        <label for="post-select-4">职位搜索</label>
+        <select id="post-select-4"></select>
+    </p>
+
+    <h5>基本搜索（限制至少输入2个字后才进行搜索）</h5>
+    <p>
+        <label for="post-select-5">职位搜索</label>
+        <select id="post-select-5"></select>
+    </p>
+
+
+
+    <h5>其他搜索（将数据进行分组）</h5>
+    <p>
+        <label for="post-select-6">搜索部门或职位</label>
+        <select id="post-select-6"></select>
+    </p>
+
+    <h5>其他搜索（将数据进行分组，隐藏分组标头）</h5>
+    <p>
+        <label for="post-select-7">搜索部门或职位</label>
+        <select id="post-select-7"></select>
+    </p>
+
+
+
+    <h5>其他搜索（数据源为异步获取，不分组）</h5>
+    <p>
+        <label for="post-select-8">搜索职位</label>
+        <select id="post-select-8"></select>
+    </p>
+
+    <h5>其他搜索（数据源为异步获取，分组）</h5>
+    <p>
+        <label for="post-select-9">搜索部门或职位</label>
+        <select id="post-select-9"></select>
+    </p>
+
+
+    <h5>其他搜索（数据源为异步获取，设置输入延迟多久才发请求，自定义请求参数）</h5>
+    <p>
+        <label for="post-select-10">搜索职位</label>
+        <select id="post-select-10"></select>
+    </p>
+
+    <h5>其他搜索（不可选择）</h5>
+    <p>
+        <label for="post-select-11">搜索职位</label>
+        <select id="post-select-11" disabled></select>
+    </p>
+
+    <script src="./js/jquery.min.js"></script>
+  <!--   <script src="./js/select2.min.js"></script>
+    <script src="./js/jquery.selectTwo.js"></script> -->
+    <script src="./js/jquery.selectTwo.full.min.js"></script>
+    <script>
+        var allPosts = [];
+
+        $.get('./allPosts.json').done(function(rs) {
+            rs = typeof rs === 'string' ? JSON.parse(rs) : rs;
+
+            allPosts = rs;
+
+            bindSelectTwo();
+        });
+
+        var allDeps = [{
+            depID: 'd11',
+            depName: '部门1'
+        }, {
+            depID: 'd12',
+            depName: '部门2'
+        }, {
+            depID: 'd13',
+            depName: '部门3'
+        }, {
+            depID: 'd14',
+            depName: '部门4'
+        }, {
+            depID: 'd15',
+            depName: '部门5'
+        }, {
+            depID: 'd16',
+            depName: '部门6'
+        }, {
+            depID: 'd17',
+            depName: '部门7'
+        }, {
+            depID: 'd18',
+            depName: '部门8'
+        }]
+
+
+        function bindSelectTwo() {
+
+            // 单选
+            $('#dep-select-1').selectTwo({
+                data: allDeps,
+                placeholder: '请选择部门',
+                id: 'depID',
+                matchField: ['depName'],
+                resultFormat: '%depName%',
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+console.log(allDeps)
+            // 多选，设置最多为3
+            $('#dep-select-2').selectTwo({
+                data: allDeps,
+                placeholder: '请选择部门',
+                id: 'depID',
+                matchField: ['depName'],
+                resultFormat: '%depName%',
+                multiple: true,
+                maxSelectedItem: 3,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 设置列表最大项为5
+            $('#dep-select-3').selectTwo({
+                data: allDeps,
+                placeholder: '请选择部门',
+                id: 'depID',
+                matchField: ['depName'],
+                resultFormat: '%depName%',
+                maxItemShow: 5,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 设置下拉显示的格式和选中后的文本格式
+            $('#post-select-1').selectTwo({
+                data: allPosts,
+                placeholder: '请选择职位',
+                id: 'postID',
+                matchField: ['postNo', 'postName'],
+                resultFormat: '[%postNo%] %postName%',
+                // selectedFormat: '[%postNo%] %postName%',
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 设置默认选择和将某项置为不可选
+            $('#post-select-2').selectTwo({
+                data: $.extend(true, [], allPosts),
+                placeholder: '请选择职位',
+                width: '260px',
+                id: 'postID',
+                matchField: ['postNo', 'postName'],
+                resultFormat: '[%postNo%] %postName%',
+                // selectedFormat: '[%postNo%] %postName%',
+                multiple: true,
+                beforeBinding: function(obj) {
+                    if (obj.status == 2) {
+                        obj.disabled = true;
+                    }
+
+                    if (obj.postID == 'p11') {
+                        obj.selected = true;
+                    }
+
+                    return obj;
+                },
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 自定义无匹配文案
+            $('#post-select-3').selectTwo({
+                data: allPosts,
+                placeholder: '请选择职位',
+                id: 'postID',
+                matchField: ['postNo', 'postName'],
+                resultFormat: '[%postNo%] %postName%',
+                noResultText: '搜不到搜不到',
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 无匹配时也可以进行选择
+            $('#post-select-4').selectTwo({
+                data: allPosts,
+                placeholder: '请选择职位',
+                id: 'postID',
+                matchField: ['postNo', 'postName'],
+                resultFormat: '[%postNo%] %postName%',
+                notMatched: true,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 限制至少输入2个字后才进行搜索
+            $('#post-select-5').selectTwo({
+                data: allPosts,
+                placeholder: '请选择职位',
+                id: 'postID',
+                matchField: ['postNo', 'postName'],
+                resultFormat: '[%postNo%] %postName%',
+                minInputLength: 2,
+                minInputText: '快点把这%min%个字输完吧',
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 将数据进行分组
+            $('#post-select-6').selectTwo({
+                group: [{
+                    data: allDeps,
+                    title: '部门',
+                    maxItemShow: 5,
+                    id: 'depID',
+                    matchField: ['depName'],
+                    resultFormat: '%depName%',
+                    // selectedFormat: '%depName%',
+                }, {
+                    data: allPosts,
+                    maxItemShow: 10,
+                    title: '职位',
+                    id: 'postID',
+                    matchField: ['postNo', 'postName'],
+                    resultFormat: '[%postNo%] %postName%',
+                    // selectedFormat: '[%postNo%] %postName%',
+                }],
+                // groupTitleShow: false,
+                notMatched: true,
+                placeholder: '搜索部门/职位',
+                minInputLength: 1,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 将数据进行分组，隐藏分组标头
+            $('#post-select-7').selectTwo({
+                group: [{
+                    data: allDeps,
+                    title: '部门',
+                    maxItemShow: 5,
+                    id: 'depID',
+                    matchField: ['depName'],
+                    resultFormat: '%depName%',
+                }, {
+                    data: allPosts,
+                    maxItemShow: 10,
+                    title: '职位',
+                    id: 'postID',
+                    matchField: ['postNo', 'postName'],
+                    resultFormat: '[%postNo%] %postName%',
+                }],
+                groupTitleShow: false,
+                notMatched: true,
+                placeholder: '搜索部门/职位',
+                minInputLength: 1,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 数据源为异步获取，不分组
+            $('#post-select-8').selectTwo({
+                data: [],
+                ajax: {
+                    url: './allPosts.json'
+                },
+                placeholder: '搜索职位',
+                id: 'postID',
+                resultFormat: '[%postNo%] %postName%',
+                minInputLength: 1,
+                multiple: true,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 数据源为异步获取，分组
+            $('#post-select-9').selectTwo({
+                ajax: {
+                    url: './postAndDep.json',
+                    success: function(rs, params) {
+                        rs = typeof rs === 'string' ? JSON.parse(rs) : rs;
+
+                        return {
+                            data: {
+                                dep: rs.dep,
+                                post: rs.post
+                            },
+                            pagination: {
+                                more: false
+                            }
+                        };
+                    }
+                },
+                group: [{
+                    data: [],
+                    groupKey: 'dep',
+                    id: 'depID',
+                    title: '部门',
+                    maxItemShow: 3,
+                    matchField: ['depName'],
+                    resultFormat: '%depName%',
+                }, {
+                    data: [],
+                    groupKey: 'post',
+                    id: 'postID',
+                    title: '职位',
+                    maxItemShow: 10,
+                    matchField: ['postNo', 'postName'],
+                    resultFormat: '[%postNo%] %postName%',
+                }],
+                placeholder: '搜索职位/部门',
+                minInputLength: 1,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 数据源为异步获取，设置输入延迟多久才发请求，自定义请求参数
+            $('#post-select-10').selectTwo({
+                ajax: {
+                    delay: 300,
+                    url: './postAndDep.json',
+                    data: function(params) {
+                        var query = {
+                            k: params.term,
+                            otherParam: 'otherParam',
+                            // page: params.page || 1
+                        };
+
+                        return query;
+                    },
+                    success: function(rs, params) {
+                        rs = typeof rs === 'string' ? JSON.parse(rs) : rs;
+
+                        return {
+                            data: {
+                                dep: rs.dep,
+                                post: rs.post
+                            },
+                            pagination: {
+                                more: false
+                            }
+                        };
+                    }
+                },
+                group: [{
+                    data: [],
+                    groupKey: 'dep',
+                    id: 'depID',
+                    title: '部门',
+                    maxItemShow: 3,
+                    matchField: ['depName'],
+                    resultFormat: '%depName%',
+                }, {
+                    data: [],
+                    groupKey: 'post',
+                    id: 'postID',
+                    title: '职位',
+                    maxItemShow: 10,
+                    matchField: ['postNo', 'postName'],
+                    resultFormat: '[%postNo%] %postName%',
+                }],
+                placeholder: '搜索职位/部门',
+                minInputLength: 1,
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+            // 不可选择
+            $('#post-select-11').selectTwo({
+                data: allPosts,
+                placeholder: '请选择职位',
+                id: 'postID',
+                matchField: ['postNo', 'postName'],
+                resultFormat: '[%postNo%] %postName%',
+                change: function($elem, data, value) {
+                    console.log($elem, data, value);
+                }
+            })
+
+        }
+    </script>
+</body>
+</html>

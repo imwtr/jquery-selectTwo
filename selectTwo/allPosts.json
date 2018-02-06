@@ -1,0 +1,37 @@
+[{
+    "postID": "p1",
+    "postNo": "J1234",
+    "postName": "岗位1"
+}, {
+    "postID": "p2",
+    "postNo": "J2234",
+    "postName": "岗位2"
+}, {
+    "postID": "p1",
+    "postNo": "J134",
+    "postName": "岗位3"
+}, {
+    "postID": "p4",
+    "postNo": "J12224",
+    "postName": "岗位4"
+}, {
+    "postID": "p5",
+    "postNo": "J234",
+    "postName": "岗位5"
+}, {
+    "postID": "p6",
+    "postNo": "J167",
+    "postName": "岗位6"
+}, {
+    "postID": "p7",
+    "postNo": "J2245",
+    "postName": "岗位7"
+}, {
+    "postID": "p11",
+    "postNo": "J1112",
+    "postName": "岗位11"
+}, {
+    "postID": "p12",
+    "postNo": "J1234",
+    "postName": "岗位12"
+}]
