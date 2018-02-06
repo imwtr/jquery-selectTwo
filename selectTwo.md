@@ -17,7 +17,7 @@
 
 ### Options 参数
 
-##### useSelect2
+##### `useSelect2`
 *boolean* 可选
 默认：false
 直接使用原来的select2插件绑定（一般不需要）
@@ -34,7 +34,7 @@
     'status': 2
 }]
 ```
-##### id
+##### `id`
 *string* 必选
 默认：'id'
 id域，用于标识某一项，选择之后得到的值也是这个id值
@@ -262,7 +262,7 @@ $('.elem').selectTwo('destroy', true);
 
 引入select2和selectTwo的资源文件，或者直接引入selectTwo.full的资源文件（已将select2文件打包在一起）
 绑定的元素对象限制为 &lt;select&gt;标签
-一般使用   参见 [Demo](./index.html)
+一般使用   参见 [Demo](./selectTwo/index.html)
 ```
             // 单选
             $('#dep-select-1').selectTwo({
