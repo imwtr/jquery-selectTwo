@@ -1,6 +1,7 @@
 // 模糊下拉搜索  select2插件的小封装
 //
 ;(function($) {
+
     $.fn.select2.amd.define('CustomResults', ['jquery', 'select2/utils', 'select2/results'], function ($, Utils, Results) {
         Results.prototype.option = function (data) {
             var option, append = false;
@@ -159,9 +160,9 @@
             id: 'id',
             // 设置需要匹配的区域（属性），默认为text
             matchField: ['text'],
-            // 搜索下拉列表的格式 % %里为项名，如 [%postNo%] %postName%，不设置则直接使用matchField的项
+            // 搜索下拉列表的格式 % %里为项名，如 [%staffNo] %staffName%，不设置则直接使用matchField的项
             resultFormat: '',
-            // 选中项的显示格式 % %里为项名，默认使用resultFormat的值  如 [%postNo%] %postName%，不设置则直接使用matchField的项
+            // 选中项的显示格式 % %里为项名，默认使用resultFormat的值  如 [%staffNo] %staffName%，不设置则直接使用matchField的项
             selectedFormat: '',
             // 设置为true可用于不精确匹配（也能搜索），输入数据时会临时加一项当前输入值到下拉列表中提供选择
             notMatched: false,
@@ -265,6 +266,7 @@
             // 销毁
             destroy: function($elem, empty) {
                 $elem.select2('destroy');
+                $elem.off('select2:close select2:open select2:select select2:unselect change');
 
                 empty && $elem.empty();
             },
@@ -504,7 +506,7 @@
                     if (options.group) {
                         var newData = $.extend(true, [], data);
                         // 没有限制最大展示的条目数的配置项，可以在sorter返回之前截取（返回之后才会进行渲染）
-                        // 当前选项值，如['p1','p2']
+                        // 当前选项值，如['S1','S2']
                         var selected = $('.my-select').val() || [];
                         selected = typeof selected === 'string' ? [selected] : selected;
 
@@ -540,7 +542,7 @@
 
                     // 在剩余项中有当前选项值，需要将其提取出来
                     var selectedInElse = false;
-                    // 当前选项值，如['p1','p2']
+                    // 当前选项值，如['S1','S2']
                     var selected = $elem.val() || [];
                     selected = typeof selected === 'string' ? [selected] : selected;
 
