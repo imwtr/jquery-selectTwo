@@ -26,6 +26,10 @@
                  'aria-selected': 'false'
              };
 
+             if (data.customClass) {
+                $(option).addClass('custom-class');
+             }
+
              if (data.disabled) {
                  delete attrs['aria-selected'];
                 attrs['aria-disabled'] = 'true';
@@ -270,6 +274,16 @@
 
                 empty && $elem.empty();
             },
+
+            // 隐藏下拉项
+            close: function($elem, value) {
+                $elem.select2('close');
+            },
+
+            // 显示下拉项
+            open: function($elem, value) {
+                $elem.select2('open');
+            }
         };
 
         if (typeof trigger === 'string') {
@@ -285,15 +299,17 @@
                 });
             }
 
-            return;
+            return this;
         } else {
             options = trigger;
         }
 
         if (options.useSelect2) {
             this.select2(options);
-            return;
+            return this;
         }
+
+        this.css('width', options.width || defaults.width);
 
         if (options.ajax) {
             var defaultsClone = $.extend(true, {}, defaults);
@@ -357,6 +373,8 @@
         this.each(function() {
             selectTwo($(this), opts);
         });
+
+        return this;
     };
 
     function createIDTextField(data, option) {
