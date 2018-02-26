@@ -315,6 +315,30 @@ $('.elem').selectTwo('destroy', true);
                     console.log($elem, data, value);
                 }
             })
+            
+            /** 自定义下拉项的样式
+                1. 设置customClass为true
+                2. 设置自定义的样式，使用下方的选择器，相关样式可自定义设置
+                .select2-container--default .select2-results__option.custom-class {
+                    color: blue;
+                }
+            */
+            $('#staff-select-1').selectTwo({
+                data: allPosts,
+                placeholder: '请选择职位',
+                id: 'postID',
+                matchField: ['postNo', 'postName'],
+                resultFormat: '[%postNo%] %postName%',
+                // selectedFormat: '[%postNo%] %postName%',
+                beforeBinding: function(obj) {
+                    if (obj.using == -1) {
+                        // 设置customClass为true
+                        obj.customClass = true;
+                    }
+
+                    return obj;
+                }
+            })
 
             // 设置默认选择和将某项置为不可选
             $('#post-select-2').selectTwo({
@@ -547,6 +571,9 @@ $('.elem').selectTwo('destroy', true);
             })
 
 
+            // 已经对原来的select2样式做一些整合，如有需要可自行修改样式来覆盖
+            // 默认<select>标签在绑定成功后才会隐藏，绑定的延迟可能会导致模糊搜索位置元素大小有跳动。可通过初始设置其样式来解决
+           
             // 设置单个值
             $('.elem').selectTwo('updateValue', 'p1');
             // 设置多个值
@@ -555,6 +582,10 @@ $('.elem').selectTwo('destroy', true);
             $('.elem').selectTwo('updateData', [{depID: 'd1', depName: '部门1'}]);
             // 取消绑定  并将select的下拉项清空
             $('.elem').selectTwo('destroy', true);
+            // 隐藏下拉项
+            $('.elem').selectTwo('close');
+            // 显示下拉项  在窗口大小发生改变时 下拉项的位置可能会错乱，这时可通过调用 $('.elem').selectTwo('close').selectTwo('open') 来解决
+            $('.elem').selectTwo('open');
             // 设置为不可选
             $('.elem').prop('disabled', true);
 
