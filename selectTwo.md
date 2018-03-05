@@ -366,6 +366,12 @@ $('.elem').selectTwo('destroy', true);
                 }
             })
 
+            // 通过 obj.disabled = true; 设置不可选 列表中仍有该项（只是不可选择），如果想要完全隐藏这一项，可换成
+            // obj.hidden = true;
+
+            // 设置默认选择时可设置 obj.selected = true; 但保证不了顺序，可转换为在绑定之后再手动更新值
+            // $('#staff-select-2').selectTwo('updateValue', ['12', '13']);
+
             // 自定义无匹配文案
             $('#post-select-3').selectTwo({
                 data: allPosts,
