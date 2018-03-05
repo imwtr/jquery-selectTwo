@@ -4,6 +4,10 @@
 
     $.fn.select2.amd.define('CustomResults', ['jquery', 'select2/utils', 'select2/results'], function ($, Utils, Results) {
         Results.prototype.option = function (data) {
+            if (data.hidden) {
+                return null;
+            }
+
             var option, append = false;
             if (data.children) {
                  option = $('.select2-results__option[aria-label="' + data.text + '"]')[0];
@@ -144,6 +148,52 @@
             };
         })
 
+        $.fn.select2.amd.define('CustomMultipleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/selection/multiple'], function ($, BaseSelection, Utils, MultipleSelection) {
+            MultipleSelection.prototype.update = function (data) {
+                this.clear();
+
+                if (data.length === 0) {
+                  return;
+                }
+
+                var $selections = [];
+
+                for (var d = 0; d < data.length; d++) {
+                  var selection = data[d];
+
+                  var $selection = this.selectionContainer();
+                  var formatted = this.display(selection, $selection);
+
+                  $selection.append(formatted);
+                  $selection.attr('title', selection.title || selection.text);
+                  $selection.attr('data-id', selection.id || '');
+
+                  Utils.StoreData($selection[0], 'data', selection);
+
+                  $selections.push($selection);
+                }
+
+                var $rendered = this.$selection.find('.select2-selection__rendered');
+
+                Utils.appendMany($rendered, $selections);
+              };
+        });
+
+        function select2_renderSelections($select2){
+            var order = $select2.data('preserved-order') || [],
+                $container = $select2.next('.select2-container'),
+                $tags = $container.find('li.select2-selection__choice'),
+                $input = $tags.last().next();
+
+            order.forEach(function(val) {
+                var $el = $tags.filter(function(i, tag) {
+                    return $(tag).attr('data-id') === val;
+                });
+
+                $input.before($el);
+            });
+        }
+
     var MAX_ITEM_SHOE = 100;
 
     $.fn.selectTwo = function(trigger, options) {
@@ -264,7 +314,30 @@
 
             // 更新值
             updateValue: function($elem, value) {
-                $elem.val(value).trigger('change');
+                $elem.val(value)
+                    .data('preserved-order', value);
+
+                if (typeof value === 'object' && value.forEach) {
+                    value.forEach(function(item) {
+                        var $optgroup = $elem.find('optgroup');
+
+                        if ($optgroup.length) {
+                            var $option = $optgroup.children('[value=' + item + ']');
+                            $option.detach();
+
+                            $optgroup.append($option);
+                        } else {
+                            var $option = $elem.children('[value=' + item + ']');
+                            $option.detach();
+
+                            $elem.append($option);
+                        }
+                    });
+                }
+
+                $elem.trigger('change', true);
+
+                select2_renderSelections($elem);
             },
 
             // 销毁
@@ -455,6 +528,7 @@
         var options = $.extend(true, {
             Results: $.fn.select2.amd.require('CustomResults'),
             SelectAdapter: $.fn.select2.amd.require('CustomSelectAdapter'),
+            MultipleSelection: $.fn.select2.amd.require('CustomMultipleSelection'),
             matcher: function(params, data, datas) {
                     if ($.trim(params.term) === '' && data.text) {
                         return {
@@ -654,6 +728,13 @@
                     var $this = $(this);
 
                     options.change($this, e.params.data, $this.val());
+                } else if (this.value) {
+                    var id = e.params.data.id;
+
+                    var $option = $(e.target).children('[value=' + id + ']');
+
+                    $option.detach();
+                    $(e.target).append($option).trigger('change', true);
                 }
             })
             .on('select2:unselect', function(e) {
@@ -661,10 +742,17 @@
                     var $this = $(this);
 
                     options.change($this, e.params.data, $this.val());
+                } else if (this.value) {
+                    var id = e.params.data.id;
+
+                    var $option = $(e.target).children('[value=' + id + ']');
+
+                    $option.detach();
+                    $(e.target).append($option).trigger('change', true);
                 }
             })
-            .on('change', function() {
-                if (options.ajax) {
+            .on('change', function(e, triggerChange) {
+                if (options.ajax || (this.value && !triggerChange)) {
                     return;
                 }
 
@@ -681,7 +769,8 @@
                         var temp = [];
                         cItem.data.forEach(function(item) {
                             if (ids.indexOf(item.id) !== -1) {
-                                temp.push(item);
+                                // temp.push(item);
+                                temp[ids.indexOf(item.id)] = item;
 
                                 if (!options.multiple) {
                                     return false;
@@ -703,7 +792,7 @@
 
                 options.data.forEach(function(item) {
                     if (ids.indexOf(item.id) !== -1) {
-                        data.push(item);
+                        data[ids.indexOf(item.id)] = item;
 
                         if (!options.multiple) {
                             return false;
