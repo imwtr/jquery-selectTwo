@@ -220,6 +220,8 @@
             selectedFormat: '',
             // 设置为true可用于不精确匹配（也能搜索），输入数据时会临时加一项当前输入值到下拉列表中提供选择
             notMatched: false,
+            // 取消父<label>的点击效果，如果不取消，在单选点击元素展示下拉列表时 输入框会自动失焦
+            labelPreventDefault: true,
             // 最大展示的列表项目 默认100
             maxItemShow: MAX_ITEM_SHOE,
             // 多选的个数
@@ -806,6 +808,12 @@
                     options.change($this, data[0], ids[0]);
                 }
             });
+
+        if (options.labelPreventDefault) {
+            $elem.closest('label').on('click',  function(e) {
+                e.preventDefault();
+            });
+        }
 
         var select2 = $elem.data('select2');
 
