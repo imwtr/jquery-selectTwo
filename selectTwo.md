@@ -68,7 +68,7 @@ id域，用于标识某一项，选择之后得到的值也是这个id值
 默认：false
 设置为true可用于不精确匹配（也能搜索），输入数据时会临时加一项当前输入值到下拉列表中提供选择
 
-#####labelPreventDefault
+##### labelPreventDefault
 *boolean* 可选
 默认：true
 是否取消父`<label>`的点击效果，如果不取消，在单选点击元素展示下拉列表时 输入框会自动失焦
