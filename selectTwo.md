@@ -595,4 +595,9 @@ $('.elem').selectTwo('destroy', true);
             // 设置为不可选
             $('.elem').prop('disabled', true);
 
+            // 如果<select>元素被<label>包裹，绑定为多选时，点击后input会先自动聚焦后自动失焦，解决办法
+            $('.elem').parent('label').on('click',  function(e) {
+                e.preventDefault();
+            });
+
 ```
