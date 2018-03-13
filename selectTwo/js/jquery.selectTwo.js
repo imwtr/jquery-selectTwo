@@ -198,6 +198,10 @@
             });
         }
 
+        function isArray(val) {
+            return val && Object.prototype.toString.call(val) === '[object Array]';
+        }
+
     var MAX_ITEM_SHOE = 100;
 
     $.fn.selectTwo = function(trigger, options) {
@@ -320,8 +324,14 @@
 
             // 更新值
             updateValue: function($elem, value) {
-                $elem.val(value)
-                    .data('preserved-order', value);
+                $elem.val(value);
+
+                if (!isArray(value)) {
+                    $elem.trigger('change');
+                    return;
+                }
+
+                $elem.data('preserved-order', value);
 
                 if (typeof value === 'object' && value.forEach) {
                     value.forEach(function(item) {
@@ -734,7 +744,7 @@
                     var $this = $(this);
 
                     options.change($this, e.params.data, $this.val());
-                } else if (this.value) {
+                } else if (isArray($(this).val())) {
                     var id = e.params.data.id;
 
                     var $option = $(e.target).children('[value=' + id + ']');
@@ -748,7 +758,7 @@
                     var $this = $(this);
 
                     options.change($this, e.params.data, $this.val());
-                } else if (this.value) {
+                } else if (isArray($(this).val())) {
                     var id = e.params.data.id;
 
                     var $option = $(e.target).children('[value=' + id + ']');
@@ -758,7 +768,7 @@
                 }
             })
             .on('change', function(e, triggerChange) {
-                if (options.ajax || (this.value && !triggerChange)) {
+                if (options.ajax || (isArray($(this).val()) && !triggerChange)) {
                     return;
                 }
 
