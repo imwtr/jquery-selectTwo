@@ -246,6 +246,10 @@
             loadingMoreText: '加载中...',
             // 多选限制最大项的文本提示  需携带%max%占位符
             maxSelectedText: '只能选择%max%项',
+            // 是否在模态框中，如果为true，则将模糊搜索下拉列表的层级设为 zIndex的值
+            inModal: false,
+            // 默认模糊搜索下拉列表的层级，在inModal为true是生效
+            zIndex: 29891016,
 
             ajax: null,
 
@@ -723,6 +727,10 @@
                 var select2 = $(this).data('select2');
                 select2.$selection.removeClass('no-top no-bottom');
 
+                if (options.inModal) {
+                    select2.$dropdown.css('z-index', 1);
+                }
+
                 // 防止下拉内容隐藏之后就失焦
                 setTimeout(function() {
                     select2.$selection.find('.select2-search__field').focus();
@@ -730,6 +738,10 @@
             })
             .on('select2:open', function(e) {
                 var select2 = $(this).data('select2');
+
+                if (options.inModal) {
+                    select2.$dropdown.css('z-index', options.zIndex);
+                }
 
                 if (select2.$dropdown.find('.select2-dropdown--above').length) {
                     select2.$dropdown.addClass('no-margin-top');
