@@ -185,6 +185,10 @@
                 $tags = $container.find('li.select2-selection__choice'),
                 $input = $tags.last().next();
 
+            if (typeof order !== 'object') {
+                order = [order];
+            }
+
             order.forEach(function(val) {
                 var $el = $tags.filter(function(i, tag) {
                     return $(tag).attr('data-id') === val;
