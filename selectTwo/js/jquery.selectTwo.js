@@ -148,6 +148,23 @@
             };
         })
 
+        $.fn.select2.amd.define('CustomSingleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/keys', 'select2/selection/single'], function ($, BaseSelection, Utils, KEYS, SingleSelection) {
+            SingleSelection.prototype.update = function (data) {
+                if (data.length === 0) {
+                  this.clear();
+                  return;
+                }
+
+                var selection = data[0];
+
+                var $rendered = this.$selection.find('.select2-selection__rendered');
+                var formatted = this.display(selection, $rendered);
+
+                $rendered.empty().append(formatted);
+                $rendered.attr('title', formatted || selection.title || selection.text);
+              };
+        });
+
         $.fn.select2.amd.define('CustomMultipleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/selection/multiple'], function ($, BaseSelection, Utils, MultipleSelection) {
             MultipleSelection.prototype.update = function (data) {
                 this.clear();
@@ -165,7 +182,7 @@
                   var formatted = this.display(selection, $selection);
 
                   $selection.append(formatted);
-                  $selection.attr('title', selection.title || selection.text);
+                  $selection.attr('title', formatted || selection.title || selection.text);
                   $selection.attr('data-id', selection.id || '');
 
                   Utils.StoreData($selection[0], 'data', selection);
@@ -548,6 +565,7 @@
         var options = $.extend(true, {
             Results: $.fn.select2.amd.require('CustomResults'),
             SelectAdapter: $.fn.select2.amd.require('CustomSelectAdapter'),
+            SingleSelection: $.fn.select2.amd.require('CustomSingleSelection'),
             MultipleSelection: $.fn.select2.amd.require('CustomMultipleSelection'),
             matcher: function(params, data, datas) {
                     if ($.trim(params.term) === '' && data.text) {
@@ -784,9 +802,6 @@
                     return;
                 }
 
-                var select2 = $(this).data('select2');
-                select2.$container.find('.select2-selection__rendered, .select2-selection__choice').attr('title', '');
-
                 var $this = $(this),
                     data = [],
                     groupData = {},
@@ -842,8 +857,6 @@
         }
 
         var select2 = $elem.data('select2');
-
-        select2.$container.find('.select2-selection__rendered, .select2-selection__choice').attr('title', '');
 
         if (options.group && !options.groupTitleShow) {
             select2.$dropdown.addClass('select2-results__groupHide');
