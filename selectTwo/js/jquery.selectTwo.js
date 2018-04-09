@@ -148,6 +148,17 @@
             };
         })
 
+        $.fn.select2.amd.define('CustomSearch', ['jquery', 'select2/utils', 'select2/keys', 'select2/selection/search'], function ($, Utils, KEYS, Search) {
+            Search.prototype.searchRemoveChoice = function (decorated, item) {
+                this.trigger('unselect', {
+                    data: item
+                });
+
+                // this.$search.val(item.text);
+                // this.handleSearch();
+              };
+        });
+
         $.fn.select2.amd.define('CustomSingleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/keys', 'select2/selection/single'], function ($, BaseSelection, Utils, KEYS, SingleSelection) {
             SingleSelection.prototype.update = function (data) {
                 if (data.length === 0) {
@@ -563,6 +574,7 @@
 
         // select2所调用的参数
         var options = $.extend(true, {
+            Search: $.fn.select2.amd.require('CustomSearch'),
             Results: $.fn.select2.amd.require('CustomResults'),
             SelectAdapter: $.fn.select2.amd.require('CustomSelectAdapter'),
             SingleSelection: $.fn.select2.amd.require('CustomSingleSelection'),
