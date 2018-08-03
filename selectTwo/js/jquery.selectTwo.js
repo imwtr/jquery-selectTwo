@@ -1,7 +1,5 @@
 // 模糊下拉搜索  select2插件的小封装
-//
 ;(function($) {
-
     $.fn.select2.amd.define('CustomResults', ['jquery', 'select2/utils', 'select2/results'], function ($, Utils, Results) {
         Results.prototype.option = function (data) {
             if (data.hidden) {
@@ -9,226 +7,322 @@
             }
 
             var option, append = false;
+
             if (data.children) {
-                 option = $('.select2-results__option[aria-label="' + data.text + '"]')[0];
+                option = $('.select2-results__option[aria-label="' + data.text + '"]')[0];
+
                 if ($(option).length === 0) {
-                     option = document.createElement('li');
-                   option.className = 'select2-results__option';
-               }
-                 else {
+                    option = document.createElement('li');
+                    option.className = 'select2-results__option';
+                }
+                else {
                     append = true;
                 }
-             }
-           else {
-                 option = document.createElement('li');
+            }
+            else {
+                option = document.createElement('li');
                 option.className = 'select2-results__option';
-             }
-
-
-            var attrs = {
-                 'role': 'treeitem',
-                 'aria-selected': 'false'
-             };
-
-             if (data.customClass) {
-                $(option).addClass('custom-class');
-             }
-
-             if (data.disabled) {
-                 delete attrs['aria-selected'];
-                attrs['aria-disabled'] = 'true';
-             }
-
-           if (data.id == null) {
-               delete attrs['aria-selected'];
-             }
-
-             if (data._resultId != null) {
-                 option.id = data._resultId;
-             }
-
-             if (data.title) {
-                 option.title = data.title;
-             }
-
-             if (data.children) {
-                 attrs.role = 'group';
-                 attrs['aria-label'] = data.text;
-                 delete attrs['aria-selected'];
-             }
-
-            for (var attr in attrs) {
-                 var val = attrs[attr];
-
-                 option.setAttribute(attr, val);
-             }
-
-             if (data.children) {
-                 var $option = $(option);
-
-                 var label = document.createElement('strong');
-                 label.className = 'select2-results__group';
-
-                 var $label = $(label);
-                 this.template(data, label);
-
-                 var $children = [];
-
-                 for (var c = 0; c < data.children.length; c++) {
-                     var child = data.children[c];
-
-                     var $child = this.option(child);
-
-                     $children.push($child);
-                 }
-
-                 var $childrenContainer;
-                 if(append){
-                   $childrenContainer =  $option.find('.select2-results__options--nested');
-                 } else{
-                   $childrenContainer =  $('<ul></ul>', {
-                     'class': 'select2-results__options select2-results__options--nested'
-                   });
-                 }
-
-                 $childrenContainer.append($children);
-                 if (!append) {
-                     $option.append(label);
-                     $option.append($childrenContainer);
-                 }
-
-             } else {
-                 this.template(data, option);
-             }
-
-             $.data(option, 'data', data);
-
-            return option;
-            };
-        });
-        // 重写SelectAdapter的几个方法
-        $.fn.select2.amd.define('CustomSelectAdapter', ['select2/data/select'], function (SelectAdapter) {
-            SelectAdapter.prototype.query = function (a, b) {
-                var d = [],
-                    e = this;
-
-                this.$element.children().each(function() {
-                    var b = $(this);
-                    if (b.is("option") || b.is("optgroup")) {
-                        var f = e.item(b);
-                        var g = e.matches(a, f, d);
-                        null !== g.data && d.push(g.data);
-                    }
-                });
-
-                b({
-                    results: d
-                });
-            };
-
-            SelectAdapter.prototype.matches = function(params, data, datas) {
-                return this.options.get("matcher")(params, data, datas)
-            };
-
-            // 重写current方法，原方法中使用this.$element.find(':selected') 获取元素性能不佳，在数据量大时严重卡顿
-            SelectAdapter.prototype.current = function (callback) {
-                var data = [];
-                var self = this;
-
-                this.$element.find('option').each(function () {
-                  var $option = $(this);
-
-                    if (this.selected) {
-                        var option = self.item($option);
-                        data.push(option);
-                    }
-                });
-
-                callback(data);
-            };
-        })
-
-        $.fn.select2.amd.define('CustomSearch', ['jquery', 'select2/utils', 'select2/keys', 'select2/selection/search'], function ($, Utils, KEYS, Search) {
-            Search.prototype.searchRemoveChoice = function (decorated, item) {
-                this.trigger('unselect', {
-                    data: item
-                });
-
-                // this.$search.val(item.text);
-                // this.handleSearch();
-              };
-        });
-
-        $.fn.select2.amd.define('CustomSingleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/keys', 'select2/selection/single'], function ($, BaseSelection, Utils, KEYS, SingleSelection) {
-            SingleSelection.prototype.update = function (data) {
-                if (data.length === 0) {
-                  this.clear();
-                  return;
-                }
-
-                var selection = data[0];
-
-                var $rendered = this.$selection.find('.select2-selection__rendered');
-                var formatted = this.display(selection, $rendered);
-
-                $rendered.empty().append(formatted);
-                $rendered.attr('title', formatted || selection.title || selection.text);
-              };
-        });
-
-        $.fn.select2.amd.define('CustomMultipleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/selection/multiple'], function ($, BaseSelection, Utils, MultipleSelection) {
-            MultipleSelection.prototype.update = function (data) {
-                this.clear();
-
-                if (data.length === 0) {
-                  return;
-                }
-
-                var $selections = [];
-
-                for (var d = 0; d < data.length; d++) {
-                  var selection = data[d];
-
-                  var $selection = this.selectionContainer();
-                  var formatted = this.display(selection, $selection);
-
-                  $selection.append(formatted);
-                  $selection.attr('title', formatted || selection.title || selection.text);
-                  $selection.attr('data-id', selection.id || '');
-
-                  Utils.StoreData($selection[0], 'data', selection);
-
-                  $selections.push($selection);
-                }
-
-                var $rendered = this.$selection.find('.select2-selection__rendered');
-
-                Utils.appendMany($rendered, $selections);
-              };
-        });
-
-        function select2_renderSelections($select2){
-            var order = $select2.data('preserved-order') || [],
-                $container = $select2.next('.select2-container'),
-                $tags = $container.find('li.select2-selection__choice'),
-                $input = $tags.last().next();
-
-            if (typeof order !== 'object') {
-                order = [order];
             }
 
-            order.forEach(function(val) {
-                var $el = $tags.filter(function(i, tag) {
-                    return $(tag).attr('data-id') === val;
-                });
+            var attrs = {
+                'role': 'treeitem',
+                'aria-selected': 'false'
+            };
 
-                $input.before($el);
+            if (data.customClass) {
+                $(option).addClass('custom-class');
+            }
+
+            if (data.disabled) {
+                delete attrs['aria-selected'];
+                attrs['aria-disabled'] = 'true';
+            }
+
+            if (data.id == null) {
+                delete attrs['aria-selected'];
+            }
+
+            if (data._resultId != null) {
+                option.id = data._resultId;
+            }
+
+            if (data.title) {
+                option.title = data.title;
+            }
+
+            if (data.children) {
+                attrs.role = 'group';
+                attrs['aria-label'] = data.text;
+                delete attrs['aria-selected'];
+            }
+
+            for (var attr in attrs) {
+                var val = attrs[attr];
+                option.setAttribute(attr, val);
+            }
+
+            if (data.children) {
+                var $option = $(option);
+
+                var label = document.createElement('strong');
+
+                label.className = 'select2-results__group';
+
+                var $label = $(label);
+                this.template(data, label);
+
+                var $children = [];
+
+                for (var c = 0; c < data.children.length; c++) {
+                    var child = data.children[c];
+                    var $child = this.option(child);
+                    $children.push($child);
+                }
+
+                var $childrenContainer;
+                if (append) {
+                    $childrenContainer =  $option.find('.select2-results__options--nested');
+                } else {
+                    $childrenContainer =  $('<ul></ul>', {
+                        'class': 'select2-results__options select2-results__options--nested'
+                    });
+                }
+
+                $childrenContainer.append($children);
+
+                if (!append) {
+                    $option.append(label);
+                    $option.append($childrenContainer);
+                }
+
+            } else {
+                this.template(data, option);
+            }
+
+            $.data(option, 'data', data);
+
+            return option;
+        };
+    });
+
+    // 重写SelectAdapter的几个方法
+    $.fn.select2.amd.define('CustomSelectAdapter', ['select2/data/select'], function (SelectAdapter) {
+        SelectAdapter.prototype.query = function (a, b) {
+            var d = [],
+                e = this;
+
+            this.$element.children().each(function() {
+                var b = $(this);
+                if (b.is("option") || b.is("optgroup")) {
+                    var f = e.item(b);
+                    var g = e.matches(a, f, d);
+                    null !== g.data && d.push(g.data);
+                }
             });
+
+            b({
+                results: d
+            });
+        };
+
+        SelectAdapter.prototype.matches = function(params, data, datas) {
+            return this.options.get("matcher")(params, data, datas)
+        };
+
+        SelectAdapter.prototype.unselect = function (data) {
+            var self = this;
+
+            if (!this.$element.prop('multiple')) {
+                return;
+            }
+
+            data.selected = false;
+
+            if ($(data.element).is('option')) {
+                data.element.selected = false;
+
+                $(data.element).closest('select').find('option[value="' + data.id + '"]').prop('selected', false);
+
+                this.$element.trigger('change');
+
+                return;
+            }
+
+            this.current(function (currentData) {
+                var val = [];
+
+                for (var d = 0; d < currentData.length; d++) {
+                    var id = currentData[d].id;
+
+                    if (id !== data.id && $.inArray(id, val) === -1) {
+                        val.push(id);
+                    }
+                }
+
+                self.$element.val(val);
+
+                self.$element.trigger('change');
+            });
+        };
+
+        // 重写current方法，原方法中使用this.$element.find(':selected') 获取元素性能不佳，在数据量大时严重卡顿
+        SelectAdapter.prototype.current = function (callback) {
+            var data = [];
+            var self = this;
+
+            this.$element.find('option').each(function () {
+                var $option = $(this);
+
+                if (this.selected) {
+                    var option = self.item($option);
+
+                    if (!data.some(function(item) {
+                        return item.id === option.id;
+                    })) {
+                        data.push(option);
+                    }
+                }
+            });
+
+            callback(data);
+        };
+    });
+
+    $.fn.select2.amd.define('CustomBaseSelection', ['jquery', 'select2/utils', 'select2/keys', 'select2/selection/base',], function ($, Utils, KEYS, BaseSelection) {
+        BaseSelection.prototype.bind = function (container, $container) {
+            var self = this;
+
+            var id = container.id + '-container';
+            var resultsId = container.id + '-results';
+
+            this.container = container;
+
+            this.$selection.on('focus', function (evt) {
+                self.trigger('focus', evt);
+            });
+
+            this.$selection.on('blur', function (evt) {
+                self._handleBlur(evt);
+            });
+
+            this.$selection.on('keydown', function (evt) {
+                self.trigger('keypress', evt);
+
+                if (evt.which === KEYS.SPACE) {
+                    evt.preventDefault();
+                }
+            });
+
+            container.on('results:focus', function (params) {
+                self.$selection.attr('aria-activedescendant', params.data._resultId);
+            });
+
+            container.on('selection:update', function (params) {
+                self.update(params.data);
+            });
+
+            container.on('open', function () {
+                // When the dropdown is open, aria-expanded="true"
+                self.$selection.attr('aria-expanded', 'true');
+                self.$selection.attr('aria-owns', resultsId);
+
+                self._attachCloseHandler(container);
+            });
+
+            container.on('close', function () {
+                // When the dropdown is closed, aria-expanded="false"
+                self.$selection.attr('aria-expanded', 'false');
+                self.$selection.removeAttr('aria-activedescendant');
+                self.$selection.removeAttr('aria-owns');
+
+                self.$selection.focus();
+                window.setTimeout(function () {
+                    // self.$selection.focus();
+                }, 0);
+
+                self._detachCloseHandler(container);
+            });
+
+            container.on('enable', function () {
+                self.$selection.attr('tabindex', self._tabindex);
+            });
+
+            container.on('disable', function () {
+                self.$selection.attr('tabindex', '-1');
+            });
+        };
+    });
+
+    $.fn.select2.amd.define('CustomSingleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/keys', 'select2/selection/single'], function ($, BaseSelection, Utils, KEYS, SingleSelection) {
+        SingleSelection.prototype.update = function (data) {
+            if (data.length === 0) {
+                this.clear();
+                return;
+            }
+
+            var selection = data[0];
+
+            var $rendered = this.$selection.find('.select2-selection__rendered');
+            var formatted = this.display(selection, $rendered);
+
+            $rendered.empty().append(formatted);
+            $rendered.attr('title', formatted || selection.title || selection.text);
+        };
+    });
+
+    $.fn.select2.amd.define('CustomMultipleSelection', ['jquery', 'select2/selection/base', 'select2/utils', 'select2/selection/multiple'], function ($, BaseSelection, Utils, MultipleSelection) {
+        MultipleSelection.prototype.update = function (data) {
+            this.clear();
+
+            if (data.length === 0) {
+                return;
+            }
+
+            var $selections = [];
+
+            for (var d = 0; d < data.length; d++) {
+                var selection = data[d];
+
+                var $selection = this.selectionContainer();
+                var formatted = this.display(selection, $selection);
+
+                $selection.append(formatted);
+                $selection.attr('title', formatted || selection.title || selection.text);
+                $selection.attr('data-id', selection.id || '');
+
+                Utils.StoreData($selection[0], 'data', selection);
+
+                $selections.push($selection);
+            }
+
+            var $rendered = this.$selection.find('.select2-selection__rendered');
+
+            Utils.appendMany($rendered, $selections);
+        };
+    });
+
+    function select2_renderSelections($select2){
+        var order = $select2.data('preserved-order') || [],
+            $container = $select2.next('.select2-container'),
+            $tags = $container.find('li.select2-selection__choice'),
+            $input = $tags.last().next();
+
+        if (typeof order !== 'object') {
+            order = [order];
         }
 
-        function isArray(val) {
-            return val && Object.prototype.toString.call(val) === '[object Array]';
-        }
+        order.forEach(function(val) {
+            var $el = $tags.filter(function(i, tag) {
+                    return $(tag).attr('data-id') === val;
+            });
+
+            $input.before($el);
+        });
+    }
+
+    function isArray(val) {
+        return val && Object.prototype.toString.call(val) === '[object Array]';
+    }
 
     var MAX_ITEM_SHOE = 100;
 
@@ -320,26 +414,26 @@
         };
 
         var ajaxDefault = {
-                delay: 250,
-                url: 'url',
-                data: function(params) {
-                    return {
-                        k: params.term
-                    };
-                },
-                success: function(rs, params) {
-                    rs = typeof rs === 'string' ? JSON.parse(rs) : rs;
+            delay: 250,
+            url: 'url',
+            data: function(params) {
+                return {
+                    k: params.term
+                };
+            },
+            success: function(rs, params) {
+                rs = typeof rs === 'string' ? JSON.parse(rs) : rs;
 
-                    return {
-                        data: rs
-                    };
-                },
-                processResults: function(rs, params) {
-                    return {
-                        results: rs
-                    };
-                }
-            };
+                return {
+                    data: rs
+                };
+            },
+            processResults: function(rs, params) {
+                return {
+                    results: rs
+                };
+            }
+        };
 
         var triggers = {
             // 更新数据源的例子  使用dataAdapter，先清空原有数据，再进行添加options项
@@ -370,12 +464,12 @@
                         var $optgroup = $elem.find('optgroup');
 
                         if ($optgroup.length) {
-                            var $option = $optgroup.children('[value=' + item + ']');
+                            var $option = $optgroup.children('[value="' + item + '"]');
                             $option.detach();
 
                             $optgroup.append($option);
                         } else {
-                            var $option = $elem.children('[value=' + item + ']');
+                            var $option = $elem.children('[value="' + item + '"]');
                             $option.detach();
 
                             $elem.append($option);
@@ -413,7 +507,7 @@
                     var $this = $(this);
 
                     if (!$this.data('select2')) {
-                        return;
+                            return;
                     }
 
                     triggers[trigger]($this, options);
@@ -512,7 +606,7 @@
                 var text = [];
 
                 option.textField.forEach(function(item) {
-                    obj[item] && text.push(obj[item]);
+                        obj[item] && text.push(obj[item]);
                 });
 
                 obj.text = obj.text || text.join('');
@@ -541,7 +635,7 @@
                     var text = [];
 
                     item.textField.forEach(function(item) {
-                        obj[item] && text.push(obj[item]);
+                            obj[item] && text.push(obj[item]);
                     });
 
                     obj.text = obj.text || text.join('');
@@ -574,182 +668,181 @@
 
         // select2所调用的参数
         var options = $.extend(true, {
-            Search: $.fn.select2.amd.require('CustomSearch'),
             Results: $.fn.select2.amd.require('CustomResults'),
             SelectAdapter: $.fn.select2.amd.require('CustomSelectAdapter'),
             SingleSelection: $.fn.select2.amd.require('CustomSingleSelection'),
             MultipleSelection: $.fn.select2.amd.require('CustomMultipleSelection'),
+            BaseSelection: $.fn.select2.amd.require('CustomBaseSelection'),
             matcher: function(params, data, datas) {
-                    if ($.trim(params.term) === '' && data.text) {
-                        return {
-                            data: data
-                        };
-                    }
+                if ($.trim(params.term) === '' && data.text) {
+                    return {
+                        data: data
+                    };
+                }
 
-                    if (typeof data.text === 'undefined' || data.text === '' || data.id === ''
-                        || (options.group && typeof data.children === 'undefined')) {
-                        return {
-                            data: null
-                        };
-                    }
+                if (typeof data.text === 'undefined' || data.text === '' || data.id === ''
+                    || (options.group && typeof data.children === 'undefined')) {
+                    return {
+                        data: null
+                    };
+                }
 
-                    var q = params.term.toLowerCase();
+                var q = params.term.toLowerCase();
 
-                    // 分组的匹配
-                    if (option.group) {
-                        var filterChildren = [];
+                // 分组的匹配
+                if (option.group) {
+                    var filterChildren = [];
 
-                        data.children.forEach(function(cItem) {
-                            cItem.matchField.forEach(function(item) {
-                                if (cItem[item] && cItem[item].toLowerCase().indexOf(q) !== -1) {
-                                    filterChildren.push(cItem);
-                                    return false;
-                                }
-                            });
-                        });
-
-                        // 将匹配到的数据返回
-                        if (filterChildren.length) {
-                            var matchedData = $.extend(true, {}, data);
-                            matchedData.children = filterChildren;
-
-                            return {
-                                data: matchedData
+                    data.children.forEach(function(cItem) {
+                        cItem.matchField.forEach(function(item) {
+                            if (cItem[item] && cItem[item].toLowerCase().indexOf(q) !== -1) {
+                                filterChildren.push(cItem);
+                                return false;
                             }
-                        }
+                        });
+                    });
+
+                    // 将匹配到的数据返回
+                    if (filterChildren.length) {
+                        var matchedData = $.extend(true, {}, data);
+                        matchedData.children = filterChildren;
 
                         return {
-                            data: null
-                        };
+                            data: matchedData
+                        }
                     }
 
+                    return {
+                        data: null
+                    };
+                }
 
-                    var matched = false;
-                    options.matchField.forEach(function(item) {
-                        if (data[item] && data[item].toLowerCase().indexOf(q) !== -1) {
-                            matched = true;
-                            return false;
+                var matched = false;
+                options.matchField.forEach(function(item) {
+                    if (data[item] && data[item].toLowerCase().indexOf(q) !== -1) {
+                        matched = true;
+                        return false;
+                    }
+                });
+
+                // 返回匹配
+                if (matched) {
+                    return {
+                        data: $.extend(true, {}, data)
+                    };
+                } else {
+                    return {
+                        data: null
+                    };
+                }
+            },
+            sorter: function(data) {
+                // 分组的
+                if (options.group) {
+                    var newData = $.extend(true, [], data);
+                    // 没有限制最大展示的条目数的配置项，可以在sorter返回之前截取（返回之后才会进行渲染）
+                    // 当前选项值，如['S1','S2']
+                    var selected = $('.my-select').val() || [];
+                    selected = typeof selected === 'string' ? [selected] : selected;
+
+                    newData.forEach(function(item) {
+                        if (item['children']) {
+                            var MAX_RESULTS_SHOW = item.maxItemShow;
+                            var tempData = item['children'].slice(0, MAX_RESULTS_SHOW);
+
+                            // 在剩余项中有当前选项值，需要将其提取出来
+                            var selectedInElse = false;
+
+                            // 匹配选中的值，提取
+                            for (var i = MAX_RESULTS_SHOW; i < item['children'].length; ++i) {
+                                for (var j = 0; j < selected.length; ++j) {
+                                    if (item['children'][i][option.idField] === selected[j]) {
+                                        selectedInElse = true;
+                                        tempData.push(item['children'][i]);
+                                    }
+                                }
+                            }
+                            // 调整返回的项目总量
+                            selectedInElse && tempData.splice(MAX_RESULTS_SHOW - selected.length, selected.length);
+                            item['children'] = tempData;
                         }
                     });
 
-                    // 返回匹配
-                    if (matched) {
-                        return {
-                            data: $.extend(true, {}, data)
-                        };
-                    } else {
-                        return {
-                            data: null
-                        };
-                    }
-                },
-                sorter: function(data) {
-                    // 分组的
-                    if (options.group) {
-                        var newData = $.extend(true, [], data);
-                        // 没有限制最大展示的条目数的配置项，可以在sorter返回之前截取（返回之后才会进行渲染）
-                        // 当前选项值，如['S1','S2']
-                        var selected = $('.my-select').val() || [];
-                        selected = typeof selected === 'string' ? [selected] : selected;
-
-                        newData.forEach(function(item) {
-                            if (item['children']) {
-                                var MAX_RESULTS_SHOW = item.maxItemShow;
-                                var tempData = item['children'].slice(0, MAX_RESULTS_SHOW);
-
-                                // 在剩余项中有当前选项值，需要将其提取出来
-                                var selectedInElse = false;
-
-                                // 匹配选中的值，提取
-                                for (var i = MAX_RESULTS_SHOW; i < item['children'].length; ++i) {
-                                    for (var j = 0; j < selected.length; ++j) {
-                                        if (item['children'][i][option.idField] === selected[j]) {
-                                            selectedInElse = true;
-                                            tempData.push(item['children'][i]);
-                                        }
-                                    }
-                                }
-                                // 调整返回的项目总量
-                                selectedInElse && tempData.splice(MAX_RESULTS_SHOW - selected.length, selected.length);
-                                item['children'] = tempData;
-                            }
-                        });
-
-                        return newData;
-                    }
-
-                    // 可直接限制列表展示的最大项数量，可以在sorter返回之前截取（返回之后才会进行渲染）
-                    var MAX_RESULTS_SHOW = options.maxItemShow;
-                    var newData = data.slice(0, MAX_RESULTS_SHOW);
-
-                    // 在剩余项中有当前选项值，需要将其提取出来
-                    var selectedInElse = false;
-                    // 当前选项值，如['S1','S2']
-                    var selected = $elem.val() || [];
-                    selected = typeof selected === 'string' ? [selected] : selected;
-
-                    // 匹配选中的值，提取
-                    for (var i = MAX_RESULTS_SHOW; i < data.length; ++i) {
-                        for (var j = 0; j < selected.length; ++j) {
-                            if (data[i][option.idField] === selected[j]) {
-                                selectedInElse = true;
-                                newData.push(data[i]);
-                            }
-                        }
-                    }
-
-                    // 调整返回的项目总量
-                    selectedInElse && newData.splice(MAX_RESULTS_SHOW - selected.length, selected.length);
-
                     return newData;
-                },
-                templateResult: function(item) {
-                    // 如果是分组，则取分组里面的参数
-                    var resultFormat = options.group ? item.resultFormat : options.resultFormat;
-                    var text = resultFormat;
-
-                    if (!text || item.loading) {
-                        return item.text;
-                    }
-
-                    for (var i in item) {
-                        if (item.hasOwnProperty(i)) {
-                            var reg = new RegExp('%' + i + '%', 'gi');
-                            text = text.replace(reg, item[i]);
-                        }
-                    }
-
-                    // 没有匹配到的 如果设置了也可选，则直接返回
-                    if (text === resultFormat && options.tags) {
-                        return item.text;
-                    }
-
-                    return text;
-                },
-                templateSelection: function(item) {
-                    // 如果是分组，则取分组里面的参数
-                    var resultFormat = options.group ? item.resultFormat : options.resultFormat;
-                    var selectedFormat = options.group ? item.selectedFormat : options.selectedFormat;
-                    var text = selectedFormat || resultFormat;
-
-                    if (!text || item.text === options.placeholder) {
-                        return item.text;
-                    }
-
-                    for (var i in item) {
-                        if (item.hasOwnProperty(i)) {
-                            var reg = new RegExp('%' + i + '%', 'gi');
-                            text = text.replace(reg, item[i]);
-                        }
-                    }
-
-                    // 没有匹配到的 如果设置了也可选，则直接返回
-                    if (text === (selectedFormat || resultFormat) && options.tags) {
-                        return item.text;
-                    }
-
-                    return text;
                 }
+
+                // 可直接限制列表展示的最大项数量，可以在sorter返回之前截取（返回之后才会进行渲染）
+                var MAX_RESULTS_SHOW = options.maxItemShow;
+                var newData = data.slice(0, MAX_RESULTS_SHOW);
+
+                // 在剩余项中有当前选项值，需要将其提取出来
+                var selectedInElse = false;
+                // 当前选项值，如['S1','S2']
+                var selected = $elem.val() || [];
+                selected = typeof selected === 'string' ? [selected] : selected;
+
+                // 匹配选中的值，提取
+                for (var i = MAX_RESULTS_SHOW; i < data.length; ++i) {
+                    for (var j = 0; j < selected.length; ++j) {
+                        if (data[i][option.idField] === selected[j]) {
+                            selectedInElse = true;
+                            newData.push(data[i]);
+                        }
+                    }
+                }
+
+                // 调整返回的项目总量
+                selectedInElse && newData.splice(MAX_RESULTS_SHOW - selected.length, selected.length);
+
+                return newData;
+            },
+            templateResult: function(item) {
+                // 如果是分组，则取分组里面的参数
+                var resultFormat = options.group ? item.resultFormat : options.resultFormat;
+                var text = resultFormat;
+
+                if (!text || item.loading) {
+                    return item.text;
+                }
+
+                for (var i in item) {
+                    if (item.hasOwnProperty(i)) {
+                        var reg = new RegExp('%' + i + '%', 'gi');
+                        text = text.replace(reg, item[i]);
+                    }
+                }
+
+                // 没有匹配到的 如果设置了也可选，则直接返回
+                if (text === resultFormat && options.tags) {
+                    return item.text;
+                }
+
+                return text;
+            },
+            templateSelection: function(item) {
+                // 如果是分组，则取分组里面的参数
+                var resultFormat = options.group ? item.resultFormat : options.resultFormat;
+                var selectedFormat = options.group ? item.selectedFormat : options.selectedFormat;
+                var text = selectedFormat || resultFormat;
+
+                if (!text || item.text === options.placeholder) {
+                    return item.text;
+                }
+
+                for (var i in item) {
+                    if (item.hasOwnProperty(i)) {
+                        var reg = new RegExp('%' + i + '%', 'gi');
+                        text = text.replace(reg, item[i]);
+                    }
+                }
+
+                // 没有匹配到的 如果设置了也可选，则直接返回
+                if (text === (selectedFormat || resultFormat) && options.tags) {
+                    return item.text;
+                }
+
+                return text;
+            }
         }, option);
 
         $elem.select2(options)
@@ -789,7 +882,7 @@
                 } else if (isArray($(this).val())) {
                     var id = e.params.data.id;
 
-                    var $option = $(e.target).children('[value=' + id + ']');
+                    var $option = $(e.target).children('[value="' + id + '"]');
 
                     $option.detach();
                     $(e.target).append($option).trigger('change', true);
@@ -803,7 +896,7 @@
                 } else if (isArray($(this).val())) {
                     var id = e.params.data.id;
 
-                    var $option = $(e.target).children('[value=' + id + ']');
+                    var $option = $(e.target).children('[value="' + id + '"]');
 
                     $option.detach();
                     $(e.target).append($option).trigger('change', true);
@@ -820,6 +913,16 @@
                     ids = [].concat($this.val());
 
                 if (options.group) {
+                    var idsTemp = [];
+
+                    for (var i = 0; i < ids.length; ++i) {
+                        if (idsTemp.indexOf(ids[i]) === -1) {
+                            idsTemp.push(ids[i]);
+                        }
+                    }
+
+                    ids = idsTemp;
+
                     options.group.forEach(function(cItem) {
                         var temp = [];
                         cItem.data.forEach(function(item) {
